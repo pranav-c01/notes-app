@@ -144,7 +144,7 @@ if (file_exists("/data/notes.txt")) {
         </div>
 
         <div class="footer">
-            Made with ❤ by  pj<span>Qualibytes</span>
+            Made with ❤ by  pj gdace god <span>Qualibytes</span>
         </div>
     </div>
 </body>
