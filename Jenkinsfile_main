@@ -1,0 +1,63 @@
+pipeline{
+    agent any
+    
+    environment {
+        IMAGE_NAME = "notes-app:latest"
+        CONTAINER_NAME = "notes-app-contianer"
+        PORT = "9090"
+        host_ip = "35.154.35.99"
+    }
+    
+    stages{
+        stage('checkout code'){
+            steps{
+                git branch: 'main',url:"https://github.com/pranav-c01/notes-app"
+            }
+        }
+        
+        stage('Build docker image'){
+            steps{
+                sh'''
+                    echo "====Building dokcer image===="
+                    docker build -t ${IMAGE_NAME} .
+                '''
+            }
+        }
+        
+        stage('stop old container'){
+            steps{
+                sh'''
+                docker rm -f $CONTAINER_NAME || true
+                '''
+            }
+        }
+        
+        stage ('run new container'){
+            steps{
+              sh'''
+                docker run -d -p ${PORT}:80 --name $CONTAINER_NAME -v notes-data:/data ${IMAGE_NAME}
+                '''
+            }
+        }
+        
+        stage("verify deployment"){
+            steps{
+                sh'''
+                    echo "===verifying app==="
+                    sleep 10
+                    curl -s http://${host_ip}:$PORT | head -n 20
+                    '''
+            }
+        }
+    }
+    
+    post {
+        success{
+            echo "wow success"
+        }
+        
+        failure{
+            echo "oh no failed"
+        }
+    }
+}
